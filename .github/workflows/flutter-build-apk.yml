@@ -1,0 +1,36 @@
+name: 一键打包 PocketPal AI APK
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 拉取你项目的代码
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      # 2. 自动配置Flutter环境（不用你本地装任何东西）
+      - name: 配置Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      # 3. 自动安装项目依赖
+      - name: 安装依赖
+        run: flutter pub get
+
+      # 4. 云端自动打包成APK
+      - name: 打包Android APK
+        run: flutter build apk --release
+
+      # 5. 把打包好的APK上传，供你下载
+      - name: 上传APK安装包
+        uses: actions/upload-artifact@v4
+        with:
+          name: PocketPalAI-最终安装包
+          path: build/app/outputs/flutter-apk/app-release.apk
