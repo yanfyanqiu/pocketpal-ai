@@ -1,0 +1,25 @@
+name: 构建 React Native APK
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+      - name: 配置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+      - name: 安装依赖
+        run: yarn install
+      - name: 配置 Android SDK
+        uses: android-actions/setup-android@v3
+      - name: 打包 Release APK
+        run: cd android && ./gradlew assembleRelease
+      - name: 上传APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
